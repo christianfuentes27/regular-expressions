@@ -4,6 +4,7 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const path = require('path');
 const url = require('url');
+const runner = require('child_process');
 require('dotenv').config();
 
 var currentRequests = 0;
@@ -53,7 +54,10 @@ wss.on('connection', (ws, req) => {
                 ws.send("Error: Your token is no longer valid.");
                 ws.close();
             } else {
-                ws.send(`I've received this reguex ${data}`);
+                runner.exec(`php ${path.join(__dirname, '..', 'reguex.php')} ${data}`, function(err, phpRespopnse) {
+                    if(err) ws.send('Error: ' + err);
+                    else ws.send(phpRespopnse);
+                });
             }
         });
         currentRequests++;

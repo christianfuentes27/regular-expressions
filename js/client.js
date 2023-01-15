@@ -23,9 +23,7 @@ loginBtn.addEventListener('click', () => {
     }
 });
 
-sendBtn.addEventListener('click', () => {
-    sendWsMessage();
-});
+sendBtn.addEventListener('click', sendWsMessage);
 
 function sendWsMessage() {
     if (ws && reguex.value != '') {
@@ -53,6 +51,7 @@ function openWsConnection(token) {
 
     ws.onclose = (event) => {
         console.log("WebSocket connection closed.");
+        sendBtn.removeEventListener('click', sendWsMessage);
     }
 }
 
