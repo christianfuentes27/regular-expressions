@@ -8,6 +8,7 @@ const reguex = document.getElementById('reguex');
 
 var token, ws;
 
+// Login on click
 loginBtn.addEventListener('click', () => {
     if (email.value != '' && password.value != '') {
         login('http://localhost:3000/login', {
@@ -15,14 +16,18 @@ loginBtn.addEventListener('click', () => {
             password: password.value
         })
         .then(res => {
+            // If login is successful, save token and open the connection 
+            // with WebSocketServer 
             token = res.data.token;
             openWsConnection(token);
+            //Display none login form and display flex reguex form
             checkLogin();
         })
         .catch(() => console.log('Something went wrong'));
     }
 });
 
+// Send regular expression to websocket on click
 sendBtn.addEventListener('click', sendWsMessage);
 
 function sendWsMessage() {
@@ -34,6 +39,7 @@ function sendWsMessage() {
 }
 
 function openWsConnection(token) {
+    // Connection with WebSocketServer passing token through params
     ws = new WebSocket("ws://localhost:3000/ws?token=" + token);
 
     // Send a message whenever the WebSocket connection opens.
@@ -51,6 +57,7 @@ function openWsConnection(token) {
 
     ws.onclose = (event) => {
         console.log("WebSocket connection closed.");
+        // Remove item reguex's send button when websocket connection is closed
         sendBtn.removeEventListener('click', sendWsMessage);
     }
 }
@@ -62,6 +69,7 @@ function checkLogin() {
     }
 }
 
+// Login fetch to express server
 async function login(url, data) {
     const response = await fetch(url, {
         method: 'POST',
