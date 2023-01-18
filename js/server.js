@@ -5,11 +5,14 @@ const jwt = require("jsonwebtoken");
 const path = require('path');
 const url = require('url');
 const runner = require('child_process');
+const Bull = require('bull');
 require('dotenv').config();
 
 var wsClients = [];
 var currentRequests = 0;
 const LIMIT_REQUESTS = 5;
+
+const queue = new Bull('queue');
 
 app.use(express.json());
 // Make html's dependencies working correctly
@@ -60,16 +63,29 @@ wss.on('connection', (ws, req) => {
     // On message, if there is an error or current requests have reached the limit, websocket 
     // connection is closed
     ws.on('message', (data) => {
-        jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+        jwt.verify(token, process.env.TOKEN_SECRET, async (err) => {
             if (err || currentRequests == LIMIT_REQUESTS) {
                 ws.send("Error: Your token is no longer valid.");
                 ws.close();
             } else {
-                // If the token is valid, it runs a php script passing client's regular expression
-                runner.exec(`php ${path.join(__dirname, '..', 'reguex.php')} ${data}`, function(err, phpRespopnse) {
-                    // The response could be an error or tells the user if it matches or not
-                    if(err) ws.send('Error: ' + err);
-                    else ws.send(phpRespopnse);
+                // Trying to implement Task Queue
+                // let job = await queue.add({data});
+
+                // queue.process(async (job, done) => {
+                //     runner.exec(`node ./js/parser.js ${job.data}`, function (err, response) {
+                //         if (err) done(err);
+                //         else done(response);
+                //     });
+                // });
+
+                // queue.on('completed', (job, result) => {
+                //     ws.send(result);
+                // });
+
+                // Execute parser passing through params user's input
+                runner.exec(`node ./js/parser.js ${data}`, function (err, response) {
+                    if (err) ws.send('Error: ' + err);
+                    else ws.send(response);
                 });
             }
         });
