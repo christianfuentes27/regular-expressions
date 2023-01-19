@@ -65,7 +65,7 @@ wss.on('connection', (ws, req) => {
     ws.on('message', (data) => {
         jwt.verify(token, process.env.TOKEN_SECRET, async (err) => {
             if (err || currentRequests == LIMIT_REQUESTS) {
-                ws.send("Error: Your token is no longer valid.");
+                ws.send("Error: Your token is no longer valid.<br>");
                 ws.close();
             } else {
                 // Trying to implement Task Queue

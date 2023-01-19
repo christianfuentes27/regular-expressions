@@ -2,23 +2,17 @@ var parser = require('./grammar.js');
 try {
     parser.parse(process.argv[2]);
 } catch (e) {
-    let response = [];
-    let location = '';
-    let expected = 'Expecting ';
+    let response = `Parse error on line ${e.hash.loc.last_line}:<br>${process.argv[2]}<br>`;
     for (let i = 0; i <= e.hash.loc.last_column; i++) {
         if (i == e.hash.loc.last_column) {
-            location += '^';
+            response += '^<br>';
         } else {
-            location += '-';
+            response += '-';
         }
     }
     e.hash.expected.forEach(exp => {
-        expected += `${exp}, `;
+        response += `${exp}, `;
     });
-    expected += `got ${e.hash.token}`;
-    response.push(`Parse error on line ${e.hash.loc.last_line}:`);
-    response.push(`${process.argv[2]}`);
-    response.push(location);
-    response.push(expected);
-    console.log(JSON.stringify(response));
+    response += `got ${e.hash.token}`;
+    console.log(response);
 }

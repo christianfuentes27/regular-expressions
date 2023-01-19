@@ -54,19 +54,13 @@ function openWsConnection(token) {
         let color = '#fff';
         try {
             message.innerHTML = '';
-            let data = JSON.parse(event.data);
-            if (typeof data == 'number') {
-                message.innerHTML = `${data}`;
+            if (!event.data.includes('<br>')) {
                 background = '#0FC956';
                 color = '#000';
-            } else {
-                data.forEach(error => {
-                    message.innerHTML += `${error}<br>`;
-                });
             }
-        } catch(e) {
+        } catch (e) { }
+        finally {
             message.innerHTML = event.data;
-        } finally {
             message.style.background = background;
             message.style.color = color;
         }
