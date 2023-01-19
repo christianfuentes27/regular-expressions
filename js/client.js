@@ -5,6 +5,7 @@ const password = document.getElementById('password');
 const loginContainer = document.querySelector('.login');
 const regexContainer = document.querySelector('.regex-container');
 const reguex = document.getElementById('reguex');
+const message = document.querySelector('.message');
 
 var token, ws;
 
@@ -15,15 +16,15 @@ loginBtn.addEventListener('click', () => {
             email: email.value,
             password: password.value
         })
-        .then(res => {
-            // If login is successful, save token and open the connection 
-            // with WebSocketServer 
-            token = res.data.token;
-            openWsConnection(token);
-            //Display none login form and display flex reguex form
-            checkLogin();
-        })
-        .catch(() => console.log('Something went wrong'));
+            .then(res => {
+                // If login is successful, save token and open the connection 
+                // with WebSocketServer 
+                token = res.data.token;
+                openWsConnection(token);
+                //Display none login form and display flex reguex form
+                checkLogin();
+            })
+            .catch(() => console.log('Something went wrong'));
     }
 });
 
@@ -48,7 +49,10 @@ function openWsConnection(token) {
     }
 
     ws.onmessage = (event) => {
-        console.log("WebSocket message received: ", event.data);
+        let data = JSON.parse(event.data);
+        data.forEach(data => {
+            message.innerHTML += `${data}<br>`;
+        });
     }
 
     ws.onerror = (event) => {

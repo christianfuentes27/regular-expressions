@@ -1,71 +1,72 @@
-/**
- * Ejemplo mi primer proyecto con Jison utilizando Nodejs en Ubuntu
- */
+/* description: Parses and executes mathematical expressions. */
 
-/* Definición Léxica */
+/* lexical grammar */
 %lex
-
-%options case-insensitive
-
 %%
 
-"Evaluar"           return 'REVALUAR';
-";"                 return 'PTCOMA';
-"("                 return 'PARIZQ';
-")"                 return 'PARDER';
-"["                 return 'CORIZQ';
-"]"                 return 'CORDER';
+\s+                   /* skip whitespace */
+[0-9]+("."[0-9]+)?\b  return 'NUMBER';
+"*"                   return '*';
+"/"                   return '/';
+"-"                   return '-';
+"+"                   return '+';
+"^"                   return '^';
+"!"                   return '!';
+"%"                   return '%';
+"("                   return '(';
+")"                   return ')';
+"PI"                  return 'PI';
+"E"                   return 'E';
+<<EOF>>               return 'EOF';
+.                     return 'INVALID';
 
-"+"                 return 'MAS';
-"-"                 return 'MENOS';
-"*"                 return 'POR';
-"/"                 return 'DIVIDIDO';
-
-/* Espacios en blanco */
-[ \r\t]+            {}
-\n                  {}
-
-[0-9]+("."[0-9]+)?\b    return 'DECIMAL';
-[0-9]+\b                return 'ENTERO';
-
-<<EOF>>                 return 'EOF';
-
-.                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
 /lex
 
-/* Asociación de operadores y precedencia */
+/* operator associations and precedence */
 
-%left 'MAS' 'MENOS'
-%left 'POR' 'DIVIDIDO'
-%left UMENOS
+%left '+' '-'
+%left '*' '/'
+%left '^'
+%right '!'
+%right '%'
+%left UMINUS
+%token INVALID
 
-%start ini
+%start expressions
 
-%% /* Definición de la gramática */
+%% /* language grammar */
 
-ini
-	: instrucciones EOF
-;
+expressions
+    : e EOF
+        { typeof console !== 'undefined' ? console.log($1) : print($1);
+          return $1; }
+    ;
 
-instrucciones
-	: instruccion instrucciones
-	| instruccion
-	| error { console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
-;
-
-instruccion
-	: REVALUAR CORIZQ expresion CORDER PTCOMA {
-		console.log('El valor de la expresión es: ' + $3);
-	}
-;
-
-expresion
-	: MENOS expresion %prec UMENOS  { $$ = $2 *-1; }
-	| expresion MAS expresion       { $$ = $1 + $3; }
-	| expresion MENOS expresion     { $$ = $1 - $3; }
-	| expresion POR expresion       { $$ = $1 * $3; }
-	| expresion DIVIDIDO expresion  { $$ = $1 / $3; }
-	| ENTERO                        { $$ = Number($1); }
-	| DECIMAL                       { $$ = Number($1); }
-	| PARIZQ expresion PARDER       { $$ = $2; }
-;
+e
+    : e '+' e
+        {$$ = $1 + $3;}
+    | e '-' e
+        {$$ = $1 - $3;}
+    | e '*' e
+        {$$ = $1 * $3;}
+    | e '/' e
+        {$$ = $1 / $3;}
+    | e '^' e
+        {$$ = Math.pow($1, $3);}
+    | e '!'
+        {{
+          $$ = (function fact(n) { return n == 0 ? 1 : fact(n - 1) * n; })($1);
+        }}
+    | e '%'
+        {$$ = $1 / 100;}
+    | '-' e %prec UMINUS
+        {$$ = -$2;}
+    | '(' e ')'
+        {$$ = $2;}
+    | NUMBER
+        {$$ = Number(yytext);}
+    | E
+        {$$ = Math.E;}
+    | PI
+        {$$ = Math.PI;}
+    ;

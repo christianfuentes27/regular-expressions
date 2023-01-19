@@ -34,3 +34,11 @@ input {
     flex-direction: column;
     margin: 50px auto;
 }
+
+.message {
+    width: fit-content;
+    background-color: rgb(15, 201, 86);
+    color: black;
+    padding: 20px 40px;
+    margin-top: 20px;
+}
