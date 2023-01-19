@@ -49,10 +49,27 @@ function openWsConnection(token) {
     }
 
     ws.onmessage = (event) => {
-        let data = JSON.parse(event.data);
-        data.forEach(data => {
-            message.innerHTML += `${data}<br>`;
-        });
+        message.style.display = "block";
+        let background = '#A11616';
+        let color = '#fff';
+        try {
+            message.innerHTML = '';
+            let data = JSON.parse(event.data);
+            if (typeof data == 'number') {
+                message.innerHTML = `${data}`;
+                background = '#0FC956';
+                color = '#000';
+            } else {
+                data.forEach(error => {
+                    message.innerHTML += `${error}<br>`;
+                });
+            }
+        } catch(e) {
+            message.innerHTML = event.data;
+        } finally {
+            message.style.background = background;
+            message.style.color = color;
+        }
     }
 
     ws.onerror = (event) => {

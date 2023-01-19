@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
+
 body {
     background-color: #444;
+    font-family: 'Cutive Mono', monospace;
 }
 
 .login {
@@ -14,6 +17,10 @@ input {
     margin-bottom: 5px;
     outline: none;
     padding: 5px 10px;
+}
+
+input, input::placeholder {
+    font-family: 'Cutive Mono', monospace;
 }
 
 .custom-btn {
@@ -37,8 +44,9 @@ input {
 
 .message {
     width: fit-content;
-    background-color: rgb(15, 201, 86);
+    background: #A11616;
     color: black;
     padding: 20px 40px;
     margin-top: 20px;
+    display: none;
 }
