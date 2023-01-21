@@ -33,7 +33,7 @@ sendBtn.addEventListener('click', sendWsMessage);
 
 function sendWsMessage() {
     if (ws && reguex.value != '') {
-        ws.send(reguex.value);
+        ws.send(JSON.parse(JSON.stringify(reguex.value)));
     } else {
         console.log('You\'re not login or input is empty');
     }

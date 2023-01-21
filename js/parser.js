@@ -5,7 +5,7 @@ try {
     let response = `Parse error on line ${e.hash.loc.last_line}:<br>${process.argv[2]}<br>`;
     for (let i = 0; i <= e.hash.loc.last_column; i++) {
         if (i == e.hash.loc.last_column) {
-            response += '^<br>';
+            response += '^<br>Expecting ';
         } else {
             response += '-';
         }

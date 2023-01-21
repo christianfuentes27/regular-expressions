@@ -1,19 +1,23 @@
 const websocket = require('ws');
 const express = require("express");
-const app = express();
 const jwt = require("jsonwebtoken");
 const path = require('path');
 const url = require('url');
 const runner = require('child_process');
-const Bull = require('bull');
+var mongodb = require('mongodb');
+var mongoDbQueue = require('mongodb-queue-up');
 require('dotenv').config();
+
+// Uri connection to mongodb
+const uri = "mongodb://mongoadmin:secret@localhost:1888/?authMechanism=DEFAULT";
+// Mongodb Client
+const client = new mongodb.MongoClient(uri);
 
 var wsClients = [];
 var currentRequests = 0;
 const LIMIT_REQUESTS = 5;
 
-const queue = new Bull('queue');
-
+const app = express();
 app.use(express.json());
 // Make html's dependencies working correctly
 app.use(express.static(path.join(__dirname, '..')));
@@ -68,24 +72,26 @@ wss.on('connection', (ws, req) => {
                 ws.send("Error: Your token is no longer valid.<br>");
                 ws.close();
             } else {
-                // Trying to implement Task Queue
-                // let job = await queue.add({data});
-
-                // queue.process(async (job, done) => {
-                //     runner.exec(`node ./js/parser.js ${job.data}`, function (err, response) {
-                //         if (err) done(err);
-                //         else done(response);
-                //     });
-                // });
-
-                // queue.on('completed', (job, result) => {
-                //     ws.send(result);
-                // });
-
-                // Execute parser passing through params user's input
-                runner.exec(`node ./js/parser.js ${data}`, function (err, response) {
-                    if (err) ws.send('Error: ' + err);
-                    else ws.send(response);
+                await client.connect();
+                // Get 'test' db
+                const db = client.db('test');
+                // Create task queue on 'test' db
+                const queue = mongoDbQueue(db, 'my-queue');
+                // Add job to queue
+                addJobToQueue(queue, data.toString()).then(() => {
+                    // If job has been correctly added, process it
+                    queue.get((err, job) => {
+                        // Execute the parser passing through params the input arithmetic operation checking 
+                        // if it is correct or not
+                        runner.exec(`node ./js/parser.js ${job.payload}`, function (err, response) {
+                            if (err) ws.send('Error: ' + err);
+                            else ws.send(response);
+                        });
+                        // After processing job, remove it from the queue
+                        queue.ack(job.ack, (err, id) => {
+                            console.log('Job removed from the queue');
+                        });
+                    });
                 });
             }
         });
@@ -93,3 +99,10 @@ wss.on('connection', (ws, req) => {
         currentRequests++;
     });
 });
+
+// Adding job to task queue
+async function addJobToQueue(queue, data) {
+    await queue.add(data, function (err, id) {
+        console.log('Added to queue');
+    });
+}
