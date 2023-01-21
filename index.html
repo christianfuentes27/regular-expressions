@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reguex expression</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/7e4ab6ef04.js" crossorigin="anonymous" defer></script>
     <script src="js/client.js" defer></script>
 </head>
 <body>
@@ -18,6 +19,19 @@
     <div class="regex-container">
         <input id="reguex" type="text" placeholder="Arithmetic operation">
         <div id="send-btn" class="custom-btn">Send</div>
+        <div class="requests">Requests left: 5</div>
+        <div class="result">Result: 
+            <div class="lds-ellipsis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="done">
+                <i class="fa-solid fa-check"></i>
+                <div class="done-text"></div>
+            </div>
+        </div>
         <div class="message"></div>
     </div>
 </body>

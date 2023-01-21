@@ -14,8 +14,6 @@ const uri = "mongodb://mongoadmin:secret@localhost:1888/?authMechanism=DEFAULT";
 const client = new mongodb.MongoClient(uri);
 
 var wsClients = [];
-var currentRequests = 0;
-const LIMIT_REQUESTS = 5;
 
 const app = express();
 app.use(express.json());
@@ -67,9 +65,10 @@ wss.on('connection', (ws, req) => {
     // On message, if there is an error or current requests have reached the limit, websocket 
     // connection is closed
     ws.on('message', (data) => {
+        data = JSON.parse(data);
         jwt.verify(token, process.env.TOKEN_SECRET, async (err) => {
-            if (err || currentRequests == LIMIT_REQUESTS) {
-                ws.send("Error: Your token is no longer valid.<br>");
+            if (err || data.requests == 0) {
+                ws.send("Your token is no longer valid.<br>");
                 ws.close();
             } else {
                 await client.connect();
@@ -78,25 +77,29 @@ wss.on('connection', (ws, req) => {
                 // Create task queue on 'test' db
                 const queue = mongoDbQueue(db, 'my-queue');
                 // Add job to queue
-                addJobToQueue(queue, data.toString()).then(() => {
-                    // If job has been correctly added, process it
-                    queue.get((err, job) => {
-                        // Execute the parser passing through params the input arithmetic operation checking 
-                        // if it is correct or not
-                        runner.exec(`node ./js/parser.js ${job.payload}`, function (err, response) {
-                            if (err) ws.send('Error: ' + err);
-                            else ws.send(response);
-                        });
-                        // After processing job, remove it from the queue
-                        queue.ack(job.ack, (err, id) => {
-                            console.log('Job removed from the queue');
+                setTimeout(() => {
+                    addJobToQueue(queue, data.operation).then(() => {
+                        // If job has been correctly added, process it
+                        queue.get((err, job) => {
+                            // Execute the parser passing through params the input arithmetic operation checking 
+                            // if it is correct or not
+                            console.log(job);
+                            runner.exec(`node ./js/parser.js ${job.payload}`, function (err, response) {
+                                if (err) ws.send('Error: ' + err);
+                                else ws.send(response);
+                            });
+                            // After processing job, remove it from the queue
+                            queue.ack(job.ack, (err, id) => {
+                                console.log('Job removed from the queue');
+                            });
+                            queue.clean((err) => {
+                                console.log('The processed jobs have been deleted');
+                            });
                         });
                     });
-                });
+                }, (Math.floor(Math.random() * 5000)));
             }
         });
-        // Increment current requests. Limit is five per token
-        currentRequests++;
     });
 });
 

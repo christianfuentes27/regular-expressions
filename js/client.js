@@ -6,6 +6,10 @@ const loginContainer = document.querySelector('.login');
 const regexContainer = document.querySelector('.regex-container');
 const reguex = document.getElementById('reguex');
 const message = document.querySelector('.message');
+const requests = document.querySelector('.requests');
+const loader = document.querySelector('.lds-ellipsis');
+const done = document.querySelector('.done');
+var currentRequests = 5;
 
 var token, ws;
 
@@ -33,7 +37,14 @@ sendBtn.addEventListener('click', sendWsMessage);
 
 function sendWsMessage() {
     if (ws && reguex.value != '') {
-        ws.send(JSON.parse(JSON.stringify(reguex.value)));
+        // ws.send(JSON.parse(JSON.stringify(reguex.value)));
+        ws.send(JSON.stringify({
+            operation: reguex.value,
+            requests: currentRequests
+        }));
+        if (currentRequests > 0) currentRequests--;
+        loader.style.display = "inline-block";
+        done.style.display = "none";
     } else {
         console.log('You\'re not login or input is empty');
     }
@@ -49,17 +60,26 @@ function openWsConnection(token) {
     }
 
     ws.onmessage = (event) => {
+        loader.style.display = "none";
         message.style.display = "block";
         let background = '#A11616';
         let color = '#fff';
+        let result = "fa-solid fa-xmark";
+        let donetext = "Error";
         try {
             message.innerHTML = '';
             if (!event.data.includes('<br>')) {
                 background = '#0FC956';
                 color = '#000';
+                result = "fa-solid fa-check";
+                donetext = "Done";
             }
         } catch (e) { }
         finally {
+            requests.innerHTML = `Requests left: ${currentRequests}`;
+            done.style.display = "flex";
+            done.children[0].className = result;
+            done.children[1].innerHTML = donetext;
             message.innerHTML = event.data;
             message.style.background = background;
             message.style.color = color;
