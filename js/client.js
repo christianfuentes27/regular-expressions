@@ -16,7 +16,7 @@ var token, ws;
 // Login on click
 loginBtn.addEventListener('click', () => {
     if (email.value != '' && password.value != '') {
-        login('http://localhost:3000/login', {
+        login('http://localhost:8000/login', {
             email: email.value,
             password: password.value
         })

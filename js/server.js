@@ -7,6 +7,7 @@ const runner = require('child_process');
 var mongodb = require('mongodb');
 var mongoDbQueue = require('mongodb-queue-up');
 require('dotenv').config();
+const cors = require('cors');
 
 // Uri connection to mongodb
 const uri = "mongodb://mongoadmin:secret@localhost:1888/?authMechanism=DEFAULT";
@@ -16,6 +17,8 @@ const client = new mongodb.MongoClient(uri);
 var wsClients = [];
 
 const app = express();
+// Use Cross Origin Resource Sharing
+app.use(cors());
 app.use(express.json());
 // Make html's dependencies working correctly
 app.use(express.static(path.join(__dirname, '..')));
