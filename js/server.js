@@ -84,17 +84,19 @@ wss.on('connection', (ws, req) => {
                             // Execute the parser passing through params the input arithmetic operation checking 
                             // if it is correct or not
                             console.log(job);
-                            runner.exec(`node ./js/parser.js ${job.payload}`, function (err, response) {
-                                if (err) ws.send('Error: ' + err);
-                                else ws.send(response);
-                            });
-                            // After processing job, remove it from the queue
-                            queue.ack(job.ack, (err, id) => {
-                                console.log('Job removed from the queue');
-                            });
-                            queue.clean((err) => {
-                                console.log('The processed jobs have been deleted');
-                            });
+                            if (job != undefined) {
+                                runner.exec(`node ./js/parser.js ${job.payload}`, function (err, response) {
+                                    if (err) ws.send('Error: ' + err);
+                                    else ws.send(response);
+                                });
+                                // After processing job, remove it from the queue
+                                queue.ack(job.ack, (err, id) => {
+                                    console.log('Job removed from the queue');
+                                });
+                                queue.clean((err) => {
+                                    console.log('The processed jobs have been deleted');
+                                });
+                            }
                         });
                     });
                 }, (Math.floor(Math.random() * 5000)));
