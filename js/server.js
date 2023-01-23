@@ -37,31 +37,32 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-const schemaLogin = Joi.object({
-    email: Joi.string().min(6).max(255).required().email(),
-    password: Joi.string().min(6).required()
-});
-
 // Receiving client's credentials and response with a token with a time no longer 
 // than 10 minutes
 app.post("/login", async (req, res) => {
-    mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(() => {
-        console.log('Connected to db');
-    }).catch((e) => {
-        console.log('Db error', e);
-    })
-    // Login validate
+    // Connect to database
+    mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => {
+            console.log('Connected to db');
+        }).catch((e) => {
+            console.log('Db error', e);
+        });
+    // Set validation schema
+    const schemaLogin = Joi.object({
+        email: Joi.string().min(6).max(255).required().email(),
+        password: Joi.string().min(6).required()
+    });
+    // Login schema validation
     const { error } = schemaLogin.validate(req.body);
-    if (error) return res.status(400).json({error: error.details[0].message});
-    // Existence validation
-    const user = await User.findOne({email: req.body.email});
-    if(!user) return res.status(400).json({error: 'User not found'});
+    if (error) return res.status(400).json({ error: error.details[0].message });
+    // Email existence validation
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) return res.status(400).json({ error: 'User not found' });
     // Password validation
     const validPassword = await req.body.password == user.password;
-    if (!validPassword) return res.status(400).json({error: 'Invalid credentials'});
+    if (!validPassword) return res.status(400).json({ error: 'Invalid credentials' });
 
-    // create token
+    // Create token
     const token = jwt.sign({
         email: user.email,
         id: user._id

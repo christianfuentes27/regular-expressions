@@ -1,27 +1,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
 
+html, body {
+    height: 100%;
+}
+
 body {
-    background-color: #444;
+    margin: 0;
+    background-image: url(img/background.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
     font-family: 'Cutive Mono', monospace;
+    box-sizing: border-box;
+}
+
+.opacity {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .3);
+}
+
+.register {
+    display: none;
 }
 
 .login {
-    width: 500px;
     display: flex;
+}
+
+.form-auth {
+    width: 500px;
+    align-items: center;
     flex-direction: column;
-    margin: 50px auto;
+    padding: 50px 0;
+    margin: auto;
+    box-shadow: 5px 8px 30px black;
+}
+
+.form-auth h4 {
+    margin-bottom: 50px;
+    font-size: 20px;
+    color: white;
 }
 
 input {
-    width: 100%;
-    margin-bottom: 5px;
+    box-sizing: border-box;
+    width: 70%;
+    margin: auto;
+    margin-bottom: 30px;
     outline: none;
-    padding: 5px 10px;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid white;
+    transition: all .3s ease;
 }
 
 input,
 input::placeholder {
     font-family: 'Cutive Mono', monospace;
+    color: white;
+}
+
+input:focus {
+    border-bottom: 1px solid rgb(18, 231, 18);
 }
 
 .custom-btn {
@@ -41,6 +85,17 @@ input::placeholder {
 .custom-btn:hover {
     background-color: black;
     border: 1px solid black;
+}
+
+.member {
+    margin-top: 30px;
+    display: flex;
+    color: white;
+}
+
+.member span {
+    color: rgb(18, 231, 18);
+    cursor: pointer;
 }
 
 .regex-container {

@@ -1,17 +1,30 @@
 const loginBtn = document.getElementById('login-btn');
 const sendBtn = document.getElementById('send-btn');
-const email = document.getElementById('email');
-const password = document.getElementById('password');
+const email = document.getElementById('loginEmail');
+const password = document.getElementById('loginPassword');
 const loginContainer = document.querySelector('.login');
+const registerContainer = document.querySelector('.register');
 const regexContainer = document.querySelector('.regex-container');
 const reguex = document.getElementById('reguex');
 const message = document.querySelector('.message');
 const requests = document.querySelector('.requests');
 const loader = document.querySelector('.lds-ellipsis');
 const done = document.querySelector('.done');
+const signUpBtn = document.getElementById('signUpBtn');
+const signInBtn = document.getElementById('signInBtn');
 var currentRequests = 5;
 
 var token, ws;
+
+signUpBtn.addEventListener('click', () => {
+    loginContainer.style.display = "none";
+    registerContainer.style.display = "flex";
+});
+
+signInBtn.addEventListener('click', () => {
+    registerContainer.style.display = "none";
+    loginContainer.style.display = "flex";
+});
 
 // Login on click
 loginBtn.addEventListener('click', () => {

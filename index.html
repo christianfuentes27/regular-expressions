@@ -11,29 +11,45 @@
     <script src="js/client.js" defer></script>
 </head>
 <body>
-    <div class="login">
-        <input id="email" type="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Password">
-        <div id="login-btn" class="custom-btn">Login</div>
-    </div>
-
-    <div class="regex-container">
-        <input id="reguex" type="text" placeholder="Arithmetic operation">
-        <div id="send-btn" class="custom-btn">Send</div>
-        <div class="requests">Requests left: 5</div>
-        <div class="result">Result: 
-            <div class="lds-ellipsis">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-            <div class="done">
-                <i class="fa-solid fa-check"></i>
-                <div class="done-text"></div>
+    <div class="opacity">
+        <div class="register form-auth">
+            <h4>Sign up</h4>
+            <input id="registerEmail" type="email" placeholder="Email">
+            <input id="registerPassword" type="password" placeholder="Password">
+            <div id="register-btn" class="custom-btn">Register</div>
+            <div class="member">
+                You have an account?&nbsp;<span id="signInBtn">Sign in</span>
             </div>
         </div>
-        <div class="message"></div>
+    
+        <div class="login form-auth">
+            <h4>Log in</h4>
+            <input id="loginEmail" type="email" placeholder="Email">
+            <input id="loginPassword" type="password" placeholder="Password">
+            <div id="login-btn" class="custom-btn">Login</div>
+            <div class="member">
+                Not a member?&nbsp;<span id="signUpBtn">Sign up</span>
+            </div>
+        </div>
+    
+        <div class="regex-container">
+            <input id="reguex" type="text" placeholder="Arithmetic operation">
+            <div id="send-btn" class="custom-btn">Send</div>
+            <div class="requests">Requests left: 5</div>
+            <div class="result">Result: 
+                <div class="lds-ellipsis">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="done">
+                    <i class="fa-solid fa-check"></i>
+                    <div class="done-text"></div>
+                </div>
+            </div>
+            <div class="message"></div>
+        </div>
     </div>
 </body>
 </html>
