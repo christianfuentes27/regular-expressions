@@ -39,11 +39,6 @@ const server = app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
 
-// Send html file to '/' server path
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
-
 // Set validation schema
 const schemaLogin = Joi.object({
     email: Joi.string().min(6).max(255).required().email(),

@@ -21,7 +21,7 @@ var currentRequests = 5, token, ws;
 // Register on click
 registerBtn.addEventListener('click', () => {
     if (resgisterEmail.value != '' && registerPassword.value != '') {
-        login('http://localhost:8000/register', {
+        login('https://localhost:8000/register', {
             email: resgisterEmail.value,
             password: registerPassword.value
         }).then(res => {
@@ -36,14 +36,14 @@ registerBtn.addEventListener('click', () => {
                 loginContainer.style.display = "flex";
                 registerContainer.style.display = "none";
             }
-        }).catch((e) => console.log('Something went wrong'));
+        }).catch((e) => console.log(e));
     }
 });
 
 // Login on click
 loginBtn.addEventListener('click', () => {
     if (loginEmail.value != '' && loginPassword.value != '') {
-        login('http://localhost:8000/login', {
+        login('https://localhost:8000/login', {
             email: loginEmail.value,
             password: loginPassword.value
         }).then(res => {
@@ -60,7 +60,7 @@ loginBtn.addEventListener('click', () => {
                 //Display none login form and display flex reguex form
                 checkAuth();
             }
-        }).catch((e) => console.log('Something went wrong'));
+        }).catch((e) => console.log(e));
     }
 });
 
@@ -152,7 +152,8 @@ async function login(url, data) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Origin': "http://localhost:3000"
         },
         body: JSON.stringify(data)
     });
