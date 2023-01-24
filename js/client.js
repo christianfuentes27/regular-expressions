@@ -64,6 +64,18 @@ loginBtn.addEventListener('click', () => {
     }
 });
 
+// Sing up listener
+signUpBtn.addEventListener('click', () => {
+    loginContainer.style.display = "none";
+    registerContainer.style.display = "flex";
+});
+
+// Sing in listener
+signInBtn.addEventListener('click', () => {
+    loginContainer.style.display = "flex";
+    registerContainer.style.display = "none";
+});
+
 // Send regular expression to websocket on click
 sendBtn.addEventListener('click', sendWsMessage);
 
@@ -137,16 +149,6 @@ function checkAuth() {
     }
 }
 
-signUpBtn.addEventListener('click', () => {
-    loginContainer.style.display = "none";
-    registerContainer.style.display = "flex";
-});
-
-signInBtn.addEventListener('click', () => {
-    loginContainer.style.display = "flex";
-    registerContainer.style.display = "none";
-});
-
 // Login fetch to express server
 async function login(url, data) {
     const response = await fetch(url, {
@@ -159,3 +161,20 @@ async function login(url, data) {
     });
     return response.json();
 }
+
+// Location function
+function getLocation() {
+    const successCb = (position) => {
+        const {
+            latitude,
+            longitude
+        } = position.coords;
+        console.log(`Your location: ${latitude}, ${longitude}`);
+    }
+    const errorCb = (error) => {
+        console.log(error);
+    }
+    navigator.geolocation.getCurrentPosition(successCb, errorCb);
+}
+
+getLocation();
